@@ -30,6 +30,7 @@ public final class app/revanced/patches/all/misc/debugging/EnableAndroidDebuggin
 
 public final class app/revanced/patches/all/misc/hex/HexPatch : app/revanced/patches/shared/misc/hex/BaseHexPatch {
 	public fun <init> ()V
+	public fun getReplacements ()Ljava/util/List;
 }
 
 public final class app/revanced/patches/all/misc/network/OverrideCertificatePinningPatch : app/revanced/patcher/patch/ResourcePatch {
@@ -575,6 +576,7 @@ public final class app/revanced/patches/reddit/customclients/joeyforreddit/detec
 public final class app/revanced/patches/reddit/customclients/redditisfun/api/SpoofClientPatch : app/revanced/patches/reddit/customclients/BaseSpoofClientPatch {
 	public static final field INSTANCE Lapp/revanced/patches/reddit/customclients/redditisfun/api/SpoofClientPatch;
 	public fun patchClientId (Ljava/util/Set;Lapp/revanced/patcher/data/BytecodeContext;)V
+	public fun patchMiscellaneous (Ljava/util/Set;Lapp/revanced/patcher/data/BytecodeContext;)V
 	public fun patchUserAgent (Ljava/util/Set;Lapp/revanced/patcher/data/BytecodeContext;)V
 }
 
@@ -677,6 +679,7 @@ public abstract class app/revanced/patches/shared/misc/hex/BaseHexPatch : app/re
 	public fun <init> ()V
 	public synthetic fun execute (Lapp/revanced/patcher/data/Context;)V
 	public fun execute (Lapp/revanced/patcher/data/ResourceContext;)V
+	public abstract fun getReplacements ()Ljava/util/List;
 }
 
 public final class app/revanced/patches/shared/misc/hex/BaseHexPatch$Replacement {
@@ -1056,6 +1059,12 @@ public final class app/revanced/patches/tudortmund/lockscreen/patch/ShowOnLocksc
 
 public final class app/revanced/patches/tumblr/ads/DisableDashboardAds : app/revanced/patcher/patch/BytecodePatch {
 	public static final field INSTANCE Lapp/revanced/patches/tumblr/ads/DisableDashboardAds;
+	public fun execute (Lapp/revanced/patcher/data/BytecodeContext;)V
+	public synthetic fun execute (Lapp/revanced/patcher/data/Context;)V
+}
+
+public final class app/revanced/patches/tumblr/annoyances/adfree/DisableAdFreeBannerPatch : app/revanced/patcher/patch/BytecodePatch {
+	public static final field INSTANCE Lapp/revanced/patches/tumblr/annoyances/adfree/DisableAdFreeBannerPatch;
 	public fun execute (Lapp/revanced/patcher/data/BytecodeContext;)V
 	public synthetic fun execute (Lapp/revanced/patcher/data/Context;)V
 }
