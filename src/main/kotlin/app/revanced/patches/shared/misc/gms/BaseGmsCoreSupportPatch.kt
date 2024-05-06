@@ -3,11 +3,14 @@ package app.revanced.patches.shared.misc.gms
 import app.revanced.patcher.PatchClass
 import app.revanced.patcher.data.BytecodeContext
 import app.revanced.patcher.extensions.InstructionExtensions.addInstructions
+import app.revanced.patcher.extensions.InstructionExtensions.addInstructionsWithLabels
+import app.revanced.patcher.extensions.InstructionExtensions.getInstruction
 import app.revanced.patcher.extensions.InstructionExtensions.getInstructions
 import app.revanced.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.revanced.patcher.fingerprint.MethodFingerprint
 import app.revanced.patcher.patch.BytecodePatch
 import app.revanced.patcher.util.proxy.mutableTypes.MutableMethod
+import app.revanced.patcher.util.smali.ExternalLabel
 import app.revanced.patches.all.misc.packagename.ChangePackageNamePatch
 import app.revanced.patches.all.misc.transformation.BaseTransformInstructionsPatch
 import app.revanced.patches.shared.misc.gms.BaseGmsCoreSupportPatch.Constants.ACTIONS
@@ -48,6 +51,41 @@ object Test : BaseTransformInstructionsPatch<Triple<TwoRegisterInstruction, Int,
             )
         }
         return null
+    }
+
+    override fun execute(context: BytecodeContext) {
+        context.findClass("VideoStreamingData;")!!.mutableClass.methods.first { it.name == "<init>" && it.parameterTypes.count() == 11 }
+            .apply {
+                getInstructions().filter {
+                    it.opcode == Opcode.CHECK_CAST
+                }.let {
+                    val i1 = it[1].location.index
+                    addInstructionsWithLabels(
+                        i1 + 2,
+                        """
+                             iget-object v14, v1, Lapky;->f:Ljava/lang/String;
+                             invoke-static { v14 }, Lapp/revanced/Test;->hook(Ljava/lang/String;)Ljava/lang/String;
+                             move-result-object v14
+                             if-eqz v14, :null
+                             iput-object v14, v1, Lapky;->f:Ljava/lang/String;
+                        """,
+                        ExternalLabel("null", getInstruction(i1 - 7)),
+                    )
+
+                    val i2 = it[0].location.index
+                    addInstructionsWithLabels(
+                        i2 + 1,
+                        """
+                             iget-object v3, v14, Lapky;->f:Ljava/lang/String;
+                             invoke-static { v3 }, Lapp/revanced/Test;->hook(Ljava/lang/String;)Ljava/lang/String;
+                             move-result-object v3
+                             if-eqz v3, :null
+                             iput-object v3, v14, Lapky;->f:Ljava/lang/String;
+                        """,
+                        ExternalLabel("null", getInstruction(i2 - 6)),
+                    )
+                }
+            }
     }
 
     override fun transform(mutableMethod: MutableMethod, entry: Triple<TwoRegisterInstruction, Int, Boolean>) {
